@@ -2,14 +2,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-This package uses Next Auth Version 5. You need a secret key. Run
-
-```bash
-npx auth secret
-```
-
-One time to generate a secret key in the `.env.local` file
-
 First, run the development server:
 
 ```bash
@@ -42,3 +34,57 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Auth Setup
+
+This package uses Next Auth Version 5. You need a secret key. Run
+
+```bash
+npx auth secret
+```
+
+One time to generate a secret key in the `.env.local` file
+
+### Keycloak Realm and Client setup
+
+We are using Keycloak as our IDP. Check the **match-backend** package for a docker compose file for Keycloak.
+
+Run `./gradlew :bootRun --args='--spring.profiles.active=dev'` to start up the backend server and the Keycloak instance.
+Run `docker compose up -d` if you only want to spin up Keycloak for some reason.
+
+Go to `http://localhost:8080` to view the KeyCloak UI. The username and password are both "admin"
+
+Create a realm in Keycloak with the Realm name: matcha
+
+Create a client with the following properties:
+
+- client-id: matcha-web
+- Root URL: http://localhost:3000
+- Home URL: http://localhost:3000
+- Valid redirect URIs: /api/auth/callback/keycloak
+- Client authentication: On
+- Authentication Flow: Standard AND Direct Access Grants
+
+Add this as the callback URL in keycloak: `[origin]/api/auth/callback/keycloak`
+
+### Keycloak Registration Setup
+
+By default, Keycloak disables user registration unless you explicitly enable it.
+
+Go to Realm Settings -> Login
+Enable:
+
+- User registration
+- Email as username
+- Login with email
+
+### Add Keycloak Credentials to .env
+
+Add the following you received from KeyCloak the `.env.local` file
+
+```
+AUTH_SECRET={} # Added by `npx auth`. Read more: https://cli.authjs.dev
+AUTH_KEYCLOAK_ID={CLIENT_ID} -> matcha-web
+AUTH_KEYCLOAK_SECRET={CLIENT_SECRET} - client -> Credentials -> Client Secret
+AUTH_KEYCLOAK_ISSUER={ISSUER_URL} -> https://localhost:8080/realms/matcha
+```
