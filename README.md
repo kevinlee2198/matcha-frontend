@@ -87,4 +87,6 @@ AUTH_SECRET={} # Added by `npx auth`. Read more: https://cli.authjs.dev
 AUTH_KEYCLOAK_ID={CLIENT_ID} -> matcha-web
 AUTH_KEYCLOAK_SECRET={CLIENT_SECRET} - client -> Credentials -> Client Secret
 AUTH_KEYCLOAK_ISSUER={ISSUER_URL} -> https://localhost:8080/realms/matcha
+
+NEXT_PUBLIC_MATCHA_API_BASE_URL=http://localhost:8000
 ```
