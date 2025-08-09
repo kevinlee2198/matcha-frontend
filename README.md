@@ -2,6 +2,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+This package uses Next Auth Version 5. You need a secret key. Run
+
+```bash
+npx auth secret
+```
+
+One time to generate a secret key in the `.env.local` file
+
 First, run the development server:
 
 ```bash
