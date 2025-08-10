@@ -1,3 +1,4 @@
+import MatchaFooter from "@/components/common/matcha-footer";
 import MatchaNavigationMenu from "@/components/common/matcha-navigation-menu";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -30,6 +31,7 @@ export default function RootLayout({
       >
         <MatchaNavigationMenu />
         {children}
+        <MatchaFooter />
       </body>
     </html>
   );
