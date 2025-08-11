@@ -4,6 +4,8 @@ import Keycloak from "next-auth/providers/keycloak";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Keycloak],
   callbacks: {
+    authorized: ({ auth }) => !!auth, // returns true if authenticated
+
     async jwt({ token, account }) {
       // Save the access_token to the JWT on initial login
       if (account?.access_token) {

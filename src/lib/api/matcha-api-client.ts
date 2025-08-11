@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import ProblemDetail from "./problem-detail";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_MATCHA_API_BASE_URL;
+
 class APIError extends Error {
   public problem: ProblemDetail;
   public status: number;
@@ -30,14 +32,11 @@ async function request<T>(
     ...(await getAuthHeader()),
   };
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_MATCHA_API_BASE_URL}${endpoint}`,
-    {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    }
-  );
+  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
   const contentType = res.headers.get("Content-Type");
 
@@ -45,15 +44,21 @@ async function request<T>(
     if (contentType && contentType.includes("application/problem+json")) {
       const problem: ProblemDetail = await res.json();
       throw new APIError(problem);
-    } else {
+    } else if (contentType && contentType.includes("text/plain")) {
       const errorText = await res.text();
       throw new Error(`Request failed: ${res.status} - ${errorText}`);
+    } else {
+      throw new Error(`Request failed: ${res.status}`);
     }
   }
 
   if (res.status === 204) {
     // No Content
     return undefined as T;
+  }
+
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error(`Invalid response content type: ${contentType}`);
   }
 
   return res.json();
