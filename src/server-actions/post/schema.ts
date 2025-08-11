@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-const createPostSchema = z.object({
+const savePostSchema = z.object({
+  id: z.string().optional(),
   title: z.string().min(1, "Title is required").max(128, "Title is too long"),
   content: z
     .string()
@@ -34,4 +35,4 @@ const createPostSchema = z.object({
   }),
 });
 
-export { createPostSchema };
+export { savePostSchema };

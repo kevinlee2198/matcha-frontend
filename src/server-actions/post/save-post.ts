@@ -1,23 +1,32 @@
 "use server";
 
-import { post } from "@/lib/api/matcha-api-client";
+import { post, put } from "@/lib/api/matcha-api-client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import z from "zod";
 import PostApiResponseFullDto from "./post-api-response-full-dto";
-import { createPostSchema } from "./schema";
+import { savePostSchema } from "./schema";
 
-async function createPost(values: z.infer<typeof createPostSchema>) {
+async function savePost(values: z.infer<typeof savePostSchema>) {
   try {
-    const response: PostApiResponseFullDto = await post("/post", values);
+    const response: PostApiResponseFullDto =
+      values.id === undefined
+        ? await post("/post", values)
+        : await put(`/post/${values.id}`, values);
 
     const redirectUrl = `/post/${response.id}`;
-    revalidatePath(redirectUrl);
-    redirect(redirectUrl);
+    if (!values.id) {
+      // It's a new post → redirect
+      redirect(redirectUrl);
+    } else {
+      // It's an update → revalidate, then return the post data
+      revalidatePath(redirectUrl);
+      return response;
+    }
   } catch (error) {
     console.error("Failed to create post:", error);
     throw new Error("Failed to create post. Please try again.");
   }
 }
 
-export { createPost };
+export { savePost };

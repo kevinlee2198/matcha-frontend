@@ -12,42 +12,52 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createPost } from "@/server-actions/post/save-post";
-import { createPostSchema } from "@/server-actions/post/schema";
+import PostApiResponseFullDto from "@/server-actions/post/post-api-response-full-dto";
+import { savePost } from "@/server-actions/post/save-post";
+import { savePostSchema } from "@/server-actions/post/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
-function CreatePostForm() {
-  const form = useForm<z.infer<typeof createPostSchema>>({
-    resolver: zodResolver(createPostSchema),
+interface Props {
+  post?: PostApiResponseFullDto;
+  onSaveSuccess?: () => void;
+}
+
+function SavePostForm({ post, onSaveSuccess }: Props) {
+  const form = useForm<z.infer<typeof savePostSchema>>({
+    resolver: zodResolver(savePostSchema),
     defaultValues: {
-      title: "",
-      content: "",
+      id: post?.id,
+      title: post?.title ?? "",
+      content: post?.content ?? "",
       subject: {
-        name: "",
-        age: undefined,
-        height: undefined,
-        location: "",
-        ethnicity: "",
-        occupation: "",
-        college: "",
+        name: post?.subject?.name ?? "",
+        age: post?.subject?.age,
+        height: post?.subject.height,
+        location: post?.subject?.location ?? "",
+        ethnicity: post?.subject?.ethnicity ?? "",
+        occupation: post?.subject?.occupation ?? "",
+        college: post?.subject?.college ?? "",
       },
     },
   });
 
-  return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-semibold mb-8 text-center">
-        Create a New Post
-      </h1>
+  async function handleSubmit(data: z.infer<typeof savePostSchema>) {
+    await savePost(data);
+    onSaveSuccess?.(); // ← this is what switches the mode back
+  }
 
+  return (
+    <div
+      className={`container max-w-4xl mx-auto px-4 ${!post?.id ? "py-12" : ""}`}
+    >
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(createPost)}
+          onSubmit={form.handleSubmit(handleSubmit)}
           className="bg-card border border-border rounded-xl p-8 space-y-10 shadow-sm hover:shadow-lg transition-shadow"
         >
-          {/* Title */}
+          {/* TITLE */}
           <FormField
             control={form.control}
             name="title"
@@ -66,7 +76,7 @@ function CreatePostForm() {
             )}
           />
 
-          {/* Content */}
+          {/* CONTENT */}
           <FormField
             control={form.control}
             name="content"
@@ -89,14 +99,13 @@ function CreatePostForm() {
             )}
           />
 
-          {/* Subject Info */}
+          {/* SUBJECT FIELDS */}
           <div className="space-y-4">
             <h2 className="text-xl font-medium">
               Person You&apos;re Posting About
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <FormField
                 control={form.control}
                 name="subject.name"
@@ -216,7 +225,7 @@ function CreatePostForm() {
           </div>
 
           <Button type="submit" className="w-full">
-            Submit Post
+            {post?.id ? "Save Changes" : "Submit Post"}
           </Button>
         </form>
       </Form>
@@ -224,4 +233,4 @@ function CreatePostForm() {
   );
 }
 
-export default CreatePostForm;
+export default SavePostForm;

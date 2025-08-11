@@ -1,7 +1,7 @@
-import CreatePostForm from "@/components/post/create-post-form";
+import SavePostForm from "@/components/post/save-post-form";
 
 function CreatePostPage() {
-  return <CreatePostForm />;
+  return <SavePostForm />;
 }
 
 export default CreatePostPage;
