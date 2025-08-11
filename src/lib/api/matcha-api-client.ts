@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { keysToCamelCase, keysToSnakeCase } from "./object-util";
 import ProblemDetail from "./problem-detail";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_MATCHA_API_BASE_URL;
@@ -35,7 +36,7 @@ async function request<T>(
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(keysToSnakeCase(body)) : undefined,
   });
 
   const contentType = res.headers.get("Content-Type");
@@ -61,23 +62,23 @@ async function request<T>(
     throw new Error(`Invalid response content type: ${contentType}`);
   }
 
-  return res.json();
+  return keysToCamelCase(res.json());
 }
 
-export async function get<T>(endpoint: string): Promise<T> {
+async function get<T>(endpoint: string): Promise<T> {
   return request<T>("GET", endpoint);
 }
 
-export async function post<T>(endpoint: string, data: unknown): Promise<T> {
+async function post<T>(endpoint: string, data: unknown): Promise<T> {
   return request<T>("POST", endpoint, data);
 }
 
-export async function put<T>(endpoint: string, data: unknown): Promise<T> {
+async function put<T>(endpoint: string, data: unknown): Promise<T> {
   return request<T>("PUT", endpoint, data);
 }
 
-export async function del<T>(endpoint: string): Promise<T> {
+async function del<T>(endpoint: string): Promise<T> {
   return request<T>("DELETE", endpoint);
 }
 
-export { APIError };
+export { APIError, del, get, post, put };
