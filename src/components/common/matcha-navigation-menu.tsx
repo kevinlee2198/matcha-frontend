@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import SignInButton from "../auth/signin-button";
+import SignOutButton from "../auth/signout-button";
 import SignUpButton from "../auth/signup-button";
 import SearchBar from "./search-bar";
 
@@ -25,37 +26,37 @@ async function MatchaNavigationMenu() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2 gap-4">
-        {/* Left: Logo */}
-        <Link href="/" className="text-lg font-semibold">
+        {/* Logo */}
+        <Link href="/" className="text-lg font-bold tracking-tight">
           matcha
         </Link>
 
-        {/* Center: Search Bar */}
-        <div className="flex-1 hidden sm:block">
+        {/* Search (centered on desktop) */}
+        <div className="hidden sm:block flex-1">
           <SearchBar />
         </div>
 
-        {/* Right: Icons and Auth */}
-        <div className="flex items-center gap-4">
+        {/* Right section */}
+        <div className="flex items-center gap-3">
           <NavigationMenu>
             <NavigationMenuList className="flex gap-2">
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/">
+                  <Link href="/" aria-label="Home">
                     <HomeIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/messages">
+                  <Link href="/messages" aria-label="Messages">
                     <MessageSquareIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/notifications">
+                  <Link href="/notifications" aria-label="Notifications">
                     <BellIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                   </Link>
                 </NavigationMenuLink>
@@ -63,21 +64,24 @@ async function MatchaNavigationMenu() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* User avatar or auth buttons */}
+          {/* Auth Section */}
           {session?.user ? (
-            <Link href="/profile" className="hover:opacity-80 transition">
-              {session.user.image ? (
-                <Image
-                  src={session.user.image}
-                  alt="User avatar"
-                  width={32}
-                  height={32}
-                  className="rounded-full object-cover"
-                />
-              ) : (
-                <CircleUserIcon className="h-6 w-6 text-muted-foreground" />
-              )}
-            </Link>
+            <>
+              <Link href="/profile" className="hover:opacity-80 transition">
+                {session.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="User avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <CircleUserIcon className="h-6 w-6 text-muted-foreground" />
+                )}
+              </Link>
+              <SignOutButton />
+            </>
           ) : (
             <>
               <SignInButton />
