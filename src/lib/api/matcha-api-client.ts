@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
+import RequestParams from "@/types/api/api-request-params";
+import ProblemDetail from "@/types/api/problem-detail";
 import { keysToCamelCase, keysToSnakeCase } from "./object-util";
-import ProblemDetail from "./problem-detail";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_MATCHA_API_BASE_URL;
 
@@ -22,9 +23,33 @@ async function getAuthHeader(): Promise<HeadersInit> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+function createUrl(endpoint: string, requestParams?: RequestParams) {
+  const url = new URL(endpoint, API_BASE_URL);
+  if (requestParams === undefined) {
+    return url;
+  }
+
+  // Append query parameters
+  Object.entries(requestParams).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    // Handle sort being an array of strings
+    if (key === "sort" && Array.isArray(value)) {
+      value.forEach((sortVal) => {
+        url.searchParams.append("sort", sortVal);
+      });
+    } else {
+      url.searchParams.append(key, value.toString());
+    }
+  });
+
+  return url;
+}
+
 async function request<T>(
   method: string,
   endpoint: string,
+  queryParams?: RequestParams,
   body?: unknown
 ): Promise<T> {
   const headers: HeadersInit = {
@@ -33,7 +58,7 @@ async function request<T>(
     ...(await getAuthHeader()),
   };
 
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const res = await fetch(createUrl(endpoint, queryParams), {
     method,
     headers,
     body: body ? JSON.stringify(keysToSnakeCase(body)) : undefined,
@@ -65,16 +90,27 @@ async function request<T>(
   return keysToCamelCase(res.json());
 }
 
-async function get<T>(endpoint: string): Promise<T> {
-  return request<T>("GET", endpoint);
+async function get<T>(
+  endpoint: string,
+  requestParams?: RequestParams
+): Promise<T> {
+  return request<T>("GET", endpoint, requestParams);
 }
 
-async function post<T>(endpoint: string, data: unknown): Promise<T> {
-  return request<T>("POST", endpoint, data);
+async function post<T>(
+  endpoint: string,
+  data: unknown,
+  requestParams?: RequestParams
+): Promise<T> {
+  return request<T>("POST", endpoint, requestParams, data);
 }
 
-async function put<T>(endpoint: string, data: unknown): Promise<T> {
-  return request<T>("PUT", endpoint, data);
+async function put<T>(
+  endpoint: string,
+  data: unknown,
+  requestParams?: RequestParams
+): Promise<T> {
+  return request<T>("PUT", endpoint, requestParams, data);
 }
 
 async function del<T>(endpoint: string): Promise<T> {
