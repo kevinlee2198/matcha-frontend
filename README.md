@@ -35,6 +35,26 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Set up Debugging
+
+Follow the instructions at [the Next.js debugging guide](https://nextjs.org/docs/app/guides/debugging)
+
+## Main Development Guide to this Project
+
+### UI Components
+
+This project uses [tailwind css](https://tailwindcss.com/) and [shadcn](https://ui.shadcn.com/docs/components) to style and create components.
+If a component does not exist then look at shadcn and see if it can be created in the project.
+
+### Authentication
+
+This project uses using [Auth.js](https://authjs.dev/) for authentication. We are using the version 5 (beta)
+
+### Best Practices
+
+1. Load data in server components whenever possible
+2. Use server actions when possible
+
 ## Auth Setup
 
 This package uses Next Auth Version 5. You need a secret key. Run

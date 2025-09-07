@@ -1,6 +1,9 @@
-import PostReadEditSwitcher from "@/components/post/post-read-edit-switcher";
+import { auth } from "@/auth";
+import PostDetail from "@/components/post/post-detail";
 import { get } from "@/lib/api/matcha-api-client";
-import PostApiResponseFullDto from "@/server-actions/post/post-api-response-full-dto";
+import { Slice } from "@/types/api/page-api-dto";
+import { CommentApiResponseFullDto } from "@/types/post/comment-api-response-dto";
+import { PostApiResponseFullDto } from "@/types/post/post-api-response-dto";
 import { notFound } from "next/navigation";
 
 interface Params {
@@ -13,9 +16,13 @@ async function PostDetailPage({ params }: Params) {
     notFound();
   }
 
-  const postDetail: PostApiResponseFullDto = await get(`/post/${id}`);
+  const session = await auth();
+  const postDetail: PostApiResponseFullDto = await get(`/api/post/${id}`);
+  const comments: Slice<CommentApiResponseFullDto> = await get(
+    `/api/comment/post/${id}`
+  );
 
-  return <PostReadEditSwitcher post={postDetail} />;
+  return <PostDetail post={postDetail} comments={comments} session={session} />;
 }
 
 export default PostDetailPage;

@@ -5,6 +5,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { handlePrint } from "@/server-actions/user/authentication";
 import {
   BellIcon,
   CircleUserIcon,
@@ -16,6 +17,7 @@ import Link from "next/link";
 import SignInButton from "../auth/signin-button";
 import SignOutButton from "../auth/signout-button";
 import SignUpButton from "../auth/signup-button";
+import { Button } from "../ui/button";
 import SearchBar from "./search-bar";
 
 // See https://ui.shadcn.com/docs/components/navigation-menu for more complex navigation
@@ -80,6 +82,11 @@ async function MatchaNavigationMenu() {
                   <CircleUserIcon className="h-6 w-6 text-muted-foreground" />
                 )}
               </Link>
+              <form action={handlePrint}>
+                <Button type="submit" variant="outline">
+                  Print
+                </Button>
+              </form>
               <SignOutButton />
             </>
           ) : (

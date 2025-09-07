@@ -87,7 +87,7 @@ async function request<T>(
     throw new Error(`Invalid response content type: ${contentType}`);
   }
 
-  return keysToCamelCase(res.json());
+  return keysToCamelCase(await res.json());
 }
 
 async function get<T>(
@@ -113,8 +113,11 @@ async function put<T>(
   return request<T>("PUT", endpoint, requestParams, data);
 }
 
-async function del<T>(endpoint: string): Promise<T> {
-  return request<T>("DELETE", endpoint);
+async function del<T>(
+  endpoint: string,
+  requestParams?: RequestParams
+): Promise<T> {
+  return request<T>("DELETE", endpoint, requestParams);
 }
 
 export { APIError, del, get, post, put };
